@@ -1,58 +1,49 @@
 # Chapter 2: Classification
 
-> **Hard Prerequisites:** Gradient descent, loss functions, and parameter updates (Chapter 1).
+## Objectives
+This chapter introduces the fundamental concepts of classification. By completing these exercises, you will understand:
+- How to define and interpret decision boundaries.
+- The difference between discriminative models and generative/probabilistic classifiers.
+- The mechanics of distance-based and margin-based classification methods.
 
----
+## Prerequisites
+- **Hard Requirements**: Gradient descent, loss functions (from Chapter 1), linear algebra, and basic calculus.
+- **Recommended**: Familiarity with vectorization in NumPy.
 
-## Learning Objectives
+## Recommended Study Sequence
+For the best learning experience, proceed in the following order:
+1. **[Logistic Regression](./logistic_regression.py)**: Start by extending linear regression concepts to classification using log-loss.
+2. **[K-Nearest Neighbors (KNN)](./knn.py)**: Shift to a non-parametric, distance-based approach to build intuition on instance-based learning.
+3. **[Gaussian Naive Bayes](./gaussian_naive_bayes.py)**: Explore a probabilistic, generative approach using Bayes' theorem.
+4. **[Linear SVM](./linear_svm.py)**: Conclude with margin maximization and hinge loss optimization.
 
-After completing this chapter, you should be able to:
+## Exercise Index
+- [`logistic_regression.py`](./logistic_regression.py): Binary classification using sigmoid and cross-entropy loss. Focuses on gradient descent optimization.
+- [`knn.py`](./knn.py): K-Nearest Neighbors implementation. Covers distance metrics, the bias-variance tradeoff, and lazy learning.
+- [`gaussian_naive_bayes.py`](./gaussian_naive_bayes.py): Generative probabilistic model applying Bayes' theorem with Gaussian class conditionals.
+- [`linear_svm.py`](./linear_svm.py): Linear Support Vector Machine using hinge loss and gradient descent for margin maximization.
 
-- Explain decision boundaries and what shapes different classifiers produce
-- Explain why cross-entropy replaces MSE for classification tasks
-- Implement probabilistic, distance-based, and margin-based classifiers from scratch
-- Reason about multi-class strategies and the curse of dimensionality
+## Cross-Chapter Conceptual Questions
+- How do discriminative classifiers (Logistic Regression, SVM) differ from generative classifiers (Naive Bayes) in terms of what they learn?
+- When would you choose a lazy learner like KNN over an eager learner like Logistic Regression?
+- How does the concept of loss functions evolve from Mean Squared Error in Chapter 1 to Cross-Entropy and Hinge Loss in this chapter?
 
-## Questions to Answer in Your Own Words
+## How Algorithms Relate
+- **Logistic Regression vs Linear SVM**: Both learn a linear decision boundary but use different objective functions (log-loss vs hinge loss). SVM maximizes the margin, while Logistic Regression models probabilities.
+- **KNN vs Naive Bayes**: Both can model non-linear boundaries (in their native forms), but KNN relies on local distance metrics while Naive Bayes relies on global statistical distributions under strong independence assumptions.
 
-1. How does logistic regression differ from linear regression, despite sharing the name?
-2. What is a decision boundary and what shapes can different classifiers produce?
-3. Why is cross-entropy used instead of MSE for classification?
-4. What assumptions does Naive Bayes make and when do they break down?
-5. What is a support vector and why does SVM maximise the margin?
-6. How does KNN make predictions without learning parameters? What is the curse of dimensionality?
+## Chapter Math Learning Goals
+- Derive the gradient of cross-entropy (log-loss) with respect to weights.
+- Understand the mathematical formulation of Euclidean distance.
+- Formulate Bayes' theorem for classification and derive the log-likelihood for Gaussian conditionals.
+- Formulate the hinge loss objective and derive its subgradients.
 
-## Algorithms to Implement from Scratch
+## Completion Checklist
+- [ ] Implement Logistic Regression and pass all tests.
+- [ ] Implement K-Nearest Neighbors and pass all tests.
+- [ ] Implement Gaussian Naive Bayes and pass all tests.
+- [ ] Implement Linear SVM and pass all tests.
+- [ ] Answer all reflection questions in the docstrings.
 
-- [ ] Logistic Regression (binary classification)
-- [ ] K-Nearest Neighbors (KNN)
-- [ ] Gaussian Naive Bayes
-- [ ] Support Vector Machine (linear kernel only)
-
-## Mathematical Derivations to Complete
-
-- Derive the sigmoid function and show that its derivative is σ(x)(1 − σ(x))
-- Derive binary cross-entropy loss and its gradient with respect to weights
-- Derive Bayes' theorem and the Gaussian class-conditional likelihood for Naive Bayes
-- Formulate SVM margin maximisation as a constrained optimisation problem
-
-## Edge Cases & Tests to Consider
-
-- Class imbalance: how does it affect each classifier differently?
-- KNN: what happens when K = 1 vs K = N?
-- Multi-class extension: one-vs-rest vs one-vs-one — when to use which?
-- Logistic regression on linearly inseparable data — what happens?
-
-## Completion Criteria
-
-You are done with this chapter when you can:
-
-- [ ] Train logistic regression on a binary dataset and plot the decision boundary
-- [ ] Explain why cross-entropy is the right loss for classification (not MSE)
-- [ ] Run KNN and explain how K affects bias vs variance
-- [ ] Derive the sigmoid gradient without notes
-- [ ] Explain the Naive Bayes independence assumption and give an example where it fails
-
-## Notes
-
-_Space for your own observations as you work through this chapter._
+## Personal Notes
+> Use this space to record your insights, common bugs encountered, or ideas for further exploration.

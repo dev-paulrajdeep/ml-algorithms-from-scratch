@@ -1,58 +1,45 @@
 # Chapter 4: Clustering
 
-> **Hard Prerequisites:** Distance metrics (Euclidean distance) and iterative optimisation (Chapter 1).
->
-> **Recommended context:** Chapter 2 (supervised vs unsupervised distinction), but not required.
+## Chapter Objectives
+In this chapter, we explore **unsupervised learning**, specifically cluster discovery. We aim to group similar data points together without relying on pre-existing labels. You will learn to implement core clustering algorithms and evaluate their performance using intrinsic metrics rather than external ground truth.
 
----
+## Prerequisites
+- **Hard Prerequisites**: Distance metrics, iterative optimization concepts (from Chapter 1).
+- **Recommended**: Chapter 2 for a strong understanding of supervised learning contexts, allowing you to contrast them with the unsupervised methods explored here.
 
-## Learning Objectives
+*Note: Clustering is taught independently of dimensionality reduction. PCA is NOT a prerequisite for clustering. While PCA can optionally be used to visualize high-dimensional clusters, it is not required to implement or understand the algorithms in this chapter.*
 
-After completing this chapter, you should be able to:
+## Recommended Study Sequence
+For the best conceptual progression, tackle the algorithms in this order:
+1. **K-Means**: The classic centroid-based optimization approach.
+2. **DBSCAN**: A shift to density-based clustering, handling noise and non-convex shapes.
+3. **Agglomerative Clustering**: A hierarchical bottom-up approach to understand relationships at multiple scales.
 
-- Explain unsupervised learning: discovering structure in data without labels
-- Implement and compare centroid-based, density-based, and hierarchical clustering
-- Evaluate clusters when there is no ground truth
-- Reason about the trade-offs: when K-Means fails, when DBSCAN excels, and vice versa
+## Exercise Index
+- [`kmeans.py`](./kmeans.py): Implement Lloyd's algorithm, K-Means++ initialization, and track the Within-Cluster Sum of Squares (WCSS / inertia) objective.
+- [`dbscan.py`](./dbscan.py): Implement density-reachability clustering using $\epsilon$-neighborhoods and core/border/noise point classification.
+- [`agglomerative_clustering.py`](./agglomerative_clustering.py): Build a bottom-up hierarchical dendrogram using single, complete, and average linkage criteria.
 
-## Questions to Answer in Your Own Words
+## Cross-Chapter Conceptual Questions
+1. **When to use what?** When is K-Means appropriate versus DBSCAN? When would you prefer Agglomerative Clustering over both?
+2. **Centroid vs. Density vs. Hierarchical**:
+   - How does the objective of minimizing variance to a centroid (K-Means) differ fundamentally from tracing continuous dense regions (DBSCAN)?
+   - How does the bottom-up deterministic merging in hierarchical clustering contrast with the random initialization dependence of K-Means?
+3. **Evaluation**: Since we don't have labels (like we did in Chapter 2 classification), how can we mathematically argue that one set of clusters is "better" than another?
 
-1. How do you evaluate a clustering result when there are no ground-truth labels?
-2. What is the elbow method and why is it a heuristic rather than an exact answer?
-3. How does DBSCAN define a cluster? What are core points, border points, and noise points?
-4. What is a dendrogram and how do you read the number of clusters from one?
-5. When does K-Means fail to find the "true" clusters? Give a concrete geometric example.
-6. Why is K-Means sensitive to initialisation? What does K-Means++ do about it?
+## Chapter Math Learning Goals
+- Prove that K-Means iterations (assignment and update steps) never increase the objective function.
+- Understand probabilistic initialization strategies (K-Means++).
+- Formulate $\epsilon$-neighborhoods and density reachability mathematically.
+- Derive distance formulas for different hierarchical linkage criteria (single, complete, average) based on pairwise distances.
 
-## Algorithms to Implement from Scratch
+## Completion Checklist
+- [ ] Completed `kmeans.py` with both random and K-Means++ initialization.
+- [ ] Confirmed K-Means handles empty cluster edge cases and monotonically decreases inertia.
+- [ ] Completed `dbscan.py` with accurate core, border, and noise labeling.
+- [ ] Confirmed DBSCAN correctly identifies non-convex clusters like "moons".
+- [ ] Completed `agglomerative_clustering.py` and generated a valid merge history.
+- [ ] Implemented and tested single, complete, and average linkage.
 
-- [ ] K-Means
-- [ ] DBSCAN
-- [ ] Hierarchical / Agglomerative Clustering
-
-## Mathematical Derivations to Complete
-
-- Derive the K-Means objective function (minimise within-cluster sum of squares)
-- Show that the K-Means alternating assignment-update procedure never increases the objective (convergence proof)
-- Define the DBSCAN ε-neighbourhood formally and describe the cluster expansion algorithm
-
-## Edge Cases & Tests to Consider
-
-- K-Means on non-convex clusters (e.g. concentric rings) — what happens and why?
-- DBSCAN sensitivity to ε and min_samples — explore how results change
-- K-Means convergence: does it always reach the global minimum? (No — explain why.)
-- What happens when K-Means is initialised with all centroids at the same point?
-
-## Completion Criteria
-
-You are done with this chapter when you can:
-
-- [ ] Run K-Means on 2D data and visualise cluster assignments
-- [ ] Explain why K-Means fails on non-convex shapes
-- [ ] Run DBSCAN on the same data and show it succeeds where K-Means fails
-- [ ] Produce a dendrogram and choose K from it
-- [ ] Explain the K-Means convergence proof without notes
-
-## Notes
-
-_Space for your own observations as you work through this chapter._
+## Personal Notes
+> Use this space to record your insights, derivation notes, or "aha!" moments.

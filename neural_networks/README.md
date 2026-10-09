@@ -1,64 +1,65 @@
 # Chapter 6: Neural Networks
 
-> **Hard Prerequisites:**
-> - **Calculus:** partial derivatives and the chain rule (for backpropagation)
-> - **Linear algebra:** matrix multiplication, dot products, vector operations (for forward propagation)
-> - **Gradient descent:** iterative parameter updates and learning rate (Chapter 1)
->
-> **Recommended context:** Chapter 2 (classification, sigmoid, cross-entropy loss), but not required.
+## Chapter Objectives
+In this chapter, you will transition from traditional machine learning models to the foundations of deep learning. You will build artificial neurons, connect them into multilayer architectures, and train them using backpropagation. Finally, you will explore and implement the evolution of optimization algorithms used to train these networks efficiently.
 
-> **Scope:** Forward propagation, activation functions, backpropagation, and gradient
-> descent optimisers for fully-connected networks only. No CNN or RNN placeholders —
-> master the MLP completely first.
+## Prerequisites
+**Hard Prerequisites:**
+- **Calculus:** Chain rule and partial derivatives (essential for backpropagation).
+- **Linear Algebra:** Matrix multiplication, dot products, transposes.
+- **Gradient Descent:** Concepts from Chapter 1.
 
----
+**Recommended Prerequisites:**
+- **Chapter 2:** Classification concepts, the sigmoid function, and cross-entropy loss.
 
-## Learning Objectives
+## Recommended Study Sequence
+The exercises in this chapter are designed to be completed in a strict sequence, building up from a single neuron to a fully optimized neural network:
 
-After completing this chapter, you should be able to:
+1. [perceptron.py](./perceptron.py): The single artificial neuron.
+2. [multilayer_perceptron.py](./multilayer_perceptron.py): Stacking neurons and learning backpropagation.
+3. [sgd.py](./sgd.py): The fundamental optimizer.
+4. [momentum.py](./momentum.py): Accelerating SGD.
+5. [rmsprop.py](./rmsprop.py): Adapting learning rates per parameter.
+6. [adam.py](./adam.py): The culmination of optimization techniques.
 
-- Explain what a single artificial neuron computes and why activation functions are essential
-- Implement forward propagation and backpropagation from scratch using matrix operations
-- Explain the vanishing gradient problem and how activation choice affects it
-- Implement and compare optimisers beyond vanilla SGD
+## Exercise Index
 
-## Questions to Answer in Your Own Words
+### 1. [Perceptron](./perceptron.py)
+Implement a single artificial neuron with step and sigmoid activations. Explore linear decision boundaries and demonstrate geometrically why a single layer cannot solve the XOR problem.
 
-1. What does a single artificial neuron compute and what role does the activation function play?
-2. Why can't a network of linear layers (no activations) learn non-linear functions, no matter how deep?
-3. Walk through backpropagation step by step for a two-layer network using the chain rule.
-4. What is the vanishing gradient problem? Which activation functions suffer from it and which mitigate it?
-5. How does momentum modify the gradient update? How does Adam extend momentum with adaptive learning rates?
+### 2. [Multilayer Perceptron (MLP)](./multilayer_perceptron.py)
+The centerpiece of this chapter. Implement forward propagation, non-linear activations (ReLU, tanh, sigmoid), and derive backpropagation from first principles using the chain rule. You will implement numerical gradient checking and observe how random initialization breaks symmetry, allowing the network to solve XOR.
 
-## Algorithms to Implement from Scratch
+### 3. [Stochastic Gradient Descent (SGD)](./sgd.py)
+Implement the base optimization algorithm. Understand the mechanics of parameter updates and the role of the learning rate.
 
-- [ ] Single Perceptron (with step and sigmoid activations)
-- [ ] Multi-Layer Perceptron (MLP) with backpropagation
-- [ ] Optimisers: SGD → SGD with Momentum → RMSProp → Adam
+### 4. [SGD with Momentum](./momentum.py)
+Building on SGD, implement velocity accumulation. Learn how momentum dampens oscillations and accelerates convergence through narrow valleys in the loss landscape.
 
-## Mathematical Derivations to Complete
+### 5. [RMSProp](./rmsprop.py)
+Building on the limitations of a global learning rate in SGD/Momentum, implement RMSProp to adaptively scale learning rates for individual parameters based on historical gradient magnitudes.
 
-- Derive the backpropagation update rules for a two-layer network from first principles (using the chain rule)
-- Derive the Adam update rule: first moment estimate, second moment estimate, bias correction
-- Show that the derivative of sigmoid is σ(x)(1 − σ(x))
+### 6. [Adam](./adam.py)
+Combine the heuristics of Momentum (first moment) and RMSProp (second moment) with bias correction to build Adam, one of the most widely used optimizers in deep learning.
 
-## Edge Cases & Tests to Consider
+## Conceptual Journey
+- **Building the Network:** You start with a single neuron (`perceptron.py`) and encounter its linear limitations. You then stack these neurons (`multilayer_perceptron.py`), which theoretically enables universal function approximation, provided you can train it (via backpropagation).
+- **Optimizing the Network:** Standard gradient descent is slow. `sgd.py` introduces stochasticity. `momentum.py` adds direction-awareness. `rmsprop.py` adds magnitude-awareness. Finally, `adam.py` synthesizes direction and magnitude awareness into a robust optimizer.
 
-- Zero weight initialisation: all weights set to 0 preserves symmetry — every neuron in a layer computes the same gradient and learns the same function. Explain why this prevents the network from learning distinct features.
-- Verify your backpropagation gradients numerically using finite differences (gradient checking)
-- XOR problem: demonstrate that a single perceptron cannot solve XOR; show that a two-layer MLP can
-- Exploding gradients: what happens with very large initial weights?
+## Chapter Math Learning Goals
+- Master the **Chain Rule** for deriving backpropagation algorithms.
+- Derive analytical gradients for loss functions with respect to network weights.
+- Understand the mathematical update rules and physical analogies of advanced optimizers (velocity, moving averages, bias correction).
 
-## Completion Criteria
+## Completion Checklist
+- [ ] Implement and test the single Perceptron (verify XOR failure).
+- [ ] Derive backpropagation gradients manually for a 2-layer network.
+- [ ] Implement the MLP and verify gradients using finite differences.
+- [ ] Train the MLP to perfectly solve the XOR problem.
+- [ ] Implement SGD and verify parameter updates.
+- [ ] Implement Momentum and observe acceleration.
+- [ ] Implement RMSProp and observe adaptive scaling.
+- [ ] Implement Adam, complete with bias correction, and compare its convergence to SGD.
 
-You are done with this chapter when you can:
-
-- [ ] Train an MLP to solve XOR from scratch
-- [ ] Derive backpropagation for a two-layer network without notes
-- [ ] Implement Adam and show it converges faster than vanilla SGD on a test problem
-- [ ] Explain the vanishing gradient problem and why ReLU helps
-- [ ] Verify your gradients with finite-difference gradient checking (relative error < 1e-5)
-
-## Notes
-
-_Space for your own observations as you work through this chapter._
+## Personal Notes
+*Use this space to track your progress, note difficult derivations, or write down questions to revisit.*
