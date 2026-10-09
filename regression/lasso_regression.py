@@ -1,49 +1,57 @@
 """
-A. Mission
-Lasso Regression (L1 regularization) adds a penalty proportional to the absolute value of the weights. Unlike Ridge, Lasso tends to push some weights to exactly zero, effectively performing automatic feature selection and producing sparse models.
+Lasso Regression (L1 Regularization) Curriculum Guide
 
-B. Prerequisites
-- Understanding of linear regression and loss functions.
-- L1 norm definition.
-- Familiarity with the concept of subgradients (since absolute value is not differentiable at zero).
+A. Step 0: Understand the problem
+Sometimes we have many features, but only a few are actually important. We want a model that performs feature selection automatically by forcing the weights of irrelevant features to exactly zero. Lasso (Least Absolute Shrinkage and Selection Operator) does this.
 
-C. Learning Questions
-1. Geometrically, why does the L1 constraint region (a diamond in 2D) cause the loss contours to often hit corners, resulting in exactly zero weights?
-2. How does Lasso compare to Ridge in the presence of highly correlated features?
-3. Why is there no closed-form solution for Lasso?
+B. Step 1: Build intuition
+While Ridge (L2) acts like a rubber band pulling weights toward zero, Lasso (L1) acts like a diamond-shaped constraint. The corners of this diamond lie exactly on the axes, making it highly probable for the optimization path to hit a corner, setting some weights to exactly zero.
 
-D. Mathematics to Derive
-1. Write the full objective function (MSE + L1 penalty).
-2. Derive the coordinate descent update rule for a single weight, or the subgradient of the L1 penalty.
-3. Formulate the soft-thresholding operator used in the update step if using coordinate descent.
+C. Step 2: Tiny numerical example
+Features: x1 (useful), x2 (random noise), x3 (random noise).
+Lasso might yield weights [2.5, 0.0, 0.0], effectively selecting only x1 and discarding x2 and x3.
 
-E. Implementation Contract
-Create a class `LassoRegression` with the following methods:
-- `__init__(self, alpha: float, learning_rate: float = 0.01, epochs: int = 1000)`
-- `fit(self, X: np.ndarray, y: np.ndarray) -> None`: Computes weights using subgradient descent (or coordinate descent). NumPy allowed for array ops.
-- `predict(self, X: np.ndarray) -> np.ndarray`: Returns predictions.
+D. Step 3: Mathematical notation
+Objective: J(w) = MSE + alpha * ||w||_1
+||w||_1 is the sum of absolute values of weights.
+Because the absolute value function is not differentiable at zero, we use subgradients or coordinate descent.
 
-F. Guided Implementation Stages
-1. Initialize weights to zero and augment X with a bias column.
-2. Set up the training loop for `epochs`.
-3. In the forward pass, calculate current predictions and the error.
-4. Compute the gradient of the MSE part.
-5. Compute the subgradient of the L1 penalty (using sign(weights), handling 0 appropriately). Ensure the bias term is not penalized.
-6. Update weights by moving opposite the sum of both gradients.
+E. Step 4: Derive the math
+For coordinate descent, we update one weight at a time while holding others fixed.
+The update rule uses the soft-thresholding operator:
+S(p, lambda) = sign(p) * max(0, |p| - lambda)
+Where p is the OLS update for a single coordinate.
 
-G. Edge Cases and Expected Tests
-1. Test with alpha=0: should approximate OLS.
-2. Test with dataset containing irrelevant features: verify that Lasso sets the weights of irrelevant features to exactly 0 (or within a tight tolerance).
-3. Test with large alpha: all non-bias weights should become 0.
+F. Step 5: Design algorithm in plain English and pseudocode
+We will use Gradient Descent with subgradients for simplicity in this curriculum, though coordinate descent is more common in practice.
+Subgradient of |w| is sign(w) (and we can choose 0 if w=0).
+Update rule: w = w - learning_rate * (gradient_of_MSE + alpha * sign(w)).
+Remember: Do not penalize or shrink the bias term!
 
-H. Complexity Analysis
-1. What is the time complexity of an epoch of subgradient descent?
-2. How does the sparsity of weights affect potential prediction time speedups?
+G. Step 6: Implement simplest version (Level 1 - Guided)
+- Single feature + bias.
+- Implement subgradient descent.
 
-I. Definition of Done
-The model successfully identifies and nullifies useless features in a dataset by driving their weights to 0, demonstrating the feature selection property of L1 regularization.
+H. Step 7: Generalize (Level 2 - Standard)
+- Implement `LassoRegression` class.
+- Fit method with loop over epochs, updating weights using the subgradient.
 
-J. Reflection
-1. Did you notice oscillation around 0 for weights due to the subgradient approach? How could coordinate descent fix this?
-2. In practice, when would you prefer Lasso over Ridge?
+I. Step 8: Test and debug
+- Ensure irrelevant features have their weights driven to zero (or very close to it, depending on learning rate).
+- Test with alpha=0 to ensure it matches standard linear regression.
+
+J. Step 9: Analyze (Level 3 - Challenge)
+- Subgradient descent for Lasso can oscillate around zero without reaching it exactly due to the fixed learning rate.
+- Implement coordinate descent instead of subgradient descent for true sparsity.
+
+Implementation Contract:
+class LassoRegression:
+    def __init__(self, alpha=1.0, learning_rate=0.01, epochs=1000): ...
+    def fit(self, X, y): ...
+    def predict(self, X): ...
+
+Mastery Gate Hints:
+- Concept Pointer: L1 regularization encourages sparsity (exact zeros).
+- Narrower: Use `np.sign()` for the subgradient of the absolute value.
+- Debugging: If weights bounce around zero and never settle, your learning rate is too high or you need to implement a soft-thresholding step.
 """

@@ -3,8 +3,8 @@ A. **Mission**
 Principal Component Analysis (PCA) is an unsupervised dimensionality reduction algorithm. It projects high-dimensional data onto a lower-dimensional subspace while preserving as much variance as possible. It is useful for data visualization, noise reduction, and mitigating the curse of dimensionality.
 
 B. **Prerequisites**
-- Hard: Matrix multiplication, covariance calculation, eigendecomposition (eigenvalues, eigenvectors).
-- Helpful: Geometric intuition of projection and basis vectors.
+- [Stage 0C: Linear Algebra](../foundations/README.md#module-0c-linear-algebra) (eigenvalues, eigenvectors, covariance matrices)
+- [Stage 0E: Probability & Statistics](../foundations/README.md#module-0e-probability-and-statistics) (sample variance and covariance)
 
 C. **Learning Questions**
 1. Why must the data be mean-centered before performing PCA?
@@ -14,7 +14,7 @@ C. **Learning Questions**
 
 D. **Mathematics to Derive**
 1. Let X be an N x D mean-centered dataset. Derive the D x D covariance matrix formula in matrix notation.
-2. Formulate the relationship between the covariance matrix, its eigenvectors, and its eigenvalues.
+2. Formulate the relationship between the covariance matrix, its eigenvectors, and its eigenvalues (Rayleigh quotient connection).
 3. Formulate the projection of X onto the top K eigenvectors to produce the reduced dataset.
 4. Formulate the reconstruction of the original dataset from the reduced dataset.
 
@@ -29,29 +29,55 @@ E. **Implementation Contract**
 - NumPy is allowed for array operations and `np.linalg.eigh` or `np.linalg.svd`.
 
 F. **Guided Implementation Stages**
-1. **Mean Centering**: Compute the feature-wise mean of X and subtract it from X. Store this mean for `inverse_transform`.
-2. **Covariance Matrix**: Compute the covariance matrix of the mean-centered data.
-3. **Eigendecomposition**: Find the eigenvalues and eigenvectors of the covariance matrix. (Hint: `np.linalg.eigh` is preferred for symmetric matrices).
-4. **Sorting Components**: Sort the eigenvalues in descending order, and sort the eigenvectors accordingly.
-5. **Selection**: Select the top `n_components` eigenvectors. Store them as `components_` (typically as rows).
-6. **Explained Variance**: Compute the `explained_variance_ratio_` by dividing the selected eigenvalues by the sum of all eigenvalues.
-7. **Projection (`transform`)**: Mean-center the input X using the fitted `mean_`, then take the dot product with the transpose of `components_`.
-8. **Reconstruction (`inverse_transform`)**: Multiply the reduced data by the `components_` matrix and add back the `mean_`.
+**Checkpoint 1: Mean Centering**
+- What to learn: Center data without losing relative distances.
+- What to do: Compute the feature-wise mean of X and subtract it from X. Store this mean.
+- How to check yourself: `np.mean(centered_X, axis=0)` should be near zero.
+- When to proceed: Centered means are essentially zero.
+- Recovery hints: 1) Ensure you specify `axis=0` for mean. 2) Check broadcasting. 3) Retain the mean for reconstruction.
+
+**Checkpoint 2: Covariance Matrix & Eigendecomposition**
+- What to learn: Extract variance directions.
+- What to do: Compute the covariance matrix of the mean-centered data. Find its eigenvalues and eigenvectors using `np.linalg.eigh`.
+- How to check yourself: Covariance matrix should be symmetric.
+- When to proceed: Eigenvalues are all non-negative.
+- Recovery hints: 1) Covariance is `(X.T @ X) / (N - 1)`. 2) `eigh` is for symmetric matrices. 3) Order of eigenvalues might be ascending.
+
+**Checkpoint 3: Sorting Components & Selection**
+- What to learn: Prioritize directions with most variance.
+- What to do: Sort the eigenvalues in descending order, and sort the eigenvectors accordingly. Select the top `n_components`.
+- How to check yourself: First selected eigenvalue is the largest.
+- When to proceed: Components matrix has shape `[n_components, n_features]`.
+- Recovery hints: 1) `np.argsort` gives ascending order; reverse it. 2) Ensure eigenvectors are sorted corresponding to eigenvalues. 3) Store eigenvectors as rows in `components_`.
+
+**Checkpoint 4: Explained Variance**
+- What to learn: Quantify information retained.
+- What to do: Compute the `explained_variance_ratio_` by dividing the selected eigenvalues by the sum of all eigenvalues.
+- How to check yourself: Ratios should be positive and sum to <= 1.0.
+- When to proceed: Calculation yields a valid probability-like array.
+- Recovery hints: 1) Sum all original eigenvalues for the denominator. 2) Ratio sum is exactly 1 if all components are kept.
+
+**Checkpoint 5: Projection (`transform`) & Reconstruction (`inverse_transform`)**
+- What to learn: Move back and forth between spaces.
+- What to do: In `transform`, mean-center X using `mean_`, then dot product with `components_.T`. In `inverse_transform`, multiply reduced data by `components_` and add back `mean_`.
+- How to check yourself: Reconstructed data matches original if `n_components == n_features`.
+- When to proceed: Shapes match expected outputs.
+- Recovery hints: 1) Remember to center data in transform. 2) Inverse transform does not re-center, it adds the mean back. 3) Watch out for matrix shapes in dot product.
 
 G. **Edge Cases and Expected Tests**
-1. Test that `inverse_transform(transform(X))` perfectly reconstructs X when `n_components` equals the number of features.
-2. Test that `explained_variance_ratio_` sums to exactly 1.0 when `n_components` equals the number of features.
-3. Test that applying `fit` to data with vastly different scales (e.g., [1, 1000]) heavily biases the first principal component toward the feature with the large scale, proving the need for mindful standardization.
+1. Test with zero-variance features: Eigenvalue for that feature should be exactly zero.
+2. Test rank-deficient covariance (e.g., N < D or highly correlated features like Dataset 5A).
+3. Test that applying `fit` to data with vastly different scales heavily biases the first principal component, illustrating when to use context-dependent standardization.
 
 H. **Complexity Analysis**
-- Time Complexity: What is the complexity of computing the covariance matrix and its eigendecomposition for an N x D dataset?
+- Time Complexity: What is the complexity of computing the covariance matrix and its eigendecomposition?
 - Space Complexity: How much memory is required to store the components and the covariance matrix?
 
-I. **Definition of Done**
-- `fit`, `transform`, and `inverse_transform` are implemented.
-- `transform` correctly projects data.
-- Reconstruction error is near zero when keeping all components.
-- Standardization vs. raw scale behavior is manually tested and understood.
+I. **Progressive Difficulty Levels & Definition of Done**
+- Level 1 Guided: Implement with provided NumPy functions step-by-step.
+- Level 2 Standard: Handle edge cases and implement robust testing.
+- Level 3 Challenge: Implement PCA using Singular Value Decomposition (SVD) directly on X instead of the covariance matrix.
+- Definition of Done: All methods work, variance ratios sum correctly, and reconstruction is accurate.
 
 J. **Reflection**
 - How does the context-dependency of standardization in PCA challenge the idea of an "always correct" preprocessing pipeline?

@@ -1,48 +1,47 @@
 """
 A. **Mission**
-Vanilla SGD can be slow to navigate ravines (valleys in the loss landscape) and tends to oscillate. SGD with Momentum addresses this by accumulating a velocity vector, acting like a heavy ball rolling downhill. It builds upon the SGD exercise by adding a memory of past gradients, which dampens oscillations and accelerates convergence in consistent directions.
+Implement SGD with Momentum to accelerate convergence on ill-conditioned surfaces (Dataset 6C).
 
 B. **Prerequisites**
-- SGD exercise (Hard).
-- Understanding of exponential moving averages (Helpful).
+- [Stage 0D: Calculus & Optimization](../foundations/README.md#module-0d-calculus-and-optimization): Gradients.
 
 C. **Learning Questions**
-1. How does the momentum term mathematically dampen oscillations in directions of high curvature?
-2. Why is the momentum hyperparameter (beta) typically chosen to be close to 1 (e.g., 0.9)?
-3. What is the physical analogy of momentum in this context?
+1. How does velocity damp oscillations?
 
 D. **Mathematics to Derive**
-1. Write down the update equations for velocity and the parameters in SGD with Momentum.
-2. Analyze the effective learning rate in a direction where the gradient is constant over many steps.
+1. Velocity update rule and effective learning rate in consistent directions.
 
 E. **Implementation Contract**
 - Class: `Momentum`
-- Constructor: `__init__(self, lr=0.01, beta=0.9)`
-  - `lr`: Learning rate (float).
-  - `beta`: Momentum coefficient (float).
-- Methods:
-  - `step(self, params, grads)`: Update parameters using momentum.
-    - `params`: List of NumPy arrays.
-    - `grads`: List of NumPy arrays.
+- `__init__(self, lr=0.01, beta=0.9)`
+- `step(self, params, grads)`
 
 F. **Guided Implementation Stages**
-1. **Initialisation**: Store `lr` and `beta`. Initialise a `velocities` list to store the moving average of gradients. The velocities must match the shapes of `params`.
-2. **First Step**: On the first call to `step`, you may need to initialise the velocity arrays to zeros of the correct shapes.
-3. **Velocity Update**: For each parameter, update its velocity: `v = beta * v - lr * grad`. 
-4. **Parameter Update**: Update the parameter: `w = w + v`.
+- **Stage 0: Velocity Initialization**
+  - **What to learn**: Stateful optimizers.
+  - **What to do**: Initialize velocities to zero matching param shapes.
+  - **How to check yourself**: len(velocities) == len(params).
+  - **When to proceed**: When shapes match.
+  - **Recovery hints 1/2/3**: Use np.zeros_like; check on first step call.
+- **Stage 1: Velocity Update**
+  - **What to learn**: Exponential moving average.
+  - **What to do**: v = beta*v - lr*grad.
+  - **How to check yourself**: Velocity should grow if grad is constant.
+  - **When to proceed**: When step works on toy arrays.
+  - **Recovery hints 1/2/3**: Check beta term; update param with v.
 
 G. **Edge Cases and Expected Tests**
-- Test that velocity accumulation correctly accelerates movement when gradients are constant.
-- Ensure velocity arrays are correctly initialised on the first step for arbitrary parameter shapes.
-- Test with beta=0 to ensure it behaves exactly like vanilla SGD.
+- Outperforms SGD on Dataset 6C.
 
 H. **Complexity Analysis**
-- Space Complexity: How much extra memory is required compared to vanilla SGD?
+- Space: O(P) for velocities.
 
-I. **Definition of Done**
-- Velocity is correctly tracked and applied.
-- The momentum update rule matches the physical analogy of accumulating speed.
+I. **Progressive Difficulty Levels & Definition of Done**
+- Level 1 Guided: Single param momentum.
+- Level 2 Standard: Full momentum step.
+- Level 3 Challenge: Nesterov momentum (optional).
+- DoD: Solves Dataset 6C faster than SGD.
 
 J. **Reflection**
-1. While momentum helps, what happens if the learning rate is uniform across all parameters but some parameters need much larger updates than others?
+Why not set beta to 0.999?
 """

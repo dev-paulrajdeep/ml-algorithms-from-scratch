@@ -1,62 +1,73 @@
 """
 A. Mission
-K-Means clustering aims to partition $N$ observations into $K$ sets (clusters) so as to minimize the within-cluster sum of squares (WCSS), also known as inertia. This is a foundational centroid-based clustering algorithm useful for discovering spherical, linearly separable groups in unlabeled data. It iteratively refines cluster assignments and centroid positions.
+K-Means aims to partition $N$ observations into $K$ sets (clusters) by minimizing the within-cluster sum of squares (WCSS), also known as inertia. It iteratively refines assignments and centroid positions.
 
 B. Prerequisites
-- Vector distances (e.g., Euclidean distance).
-- Concept of an objective function and iterative optimization.
-- (Helpful but not strictly required) Basic probability for K-Means++ initialization.
+- [Stage 0C: Linear Algebra](../foundations/README.md#module-0c-linear-algebra): Norms and distance metrics.
+- [Stage 0F: ML Core](../foundations/README.md#module-0f-machine-learning-core-concepts): Unsupervised framing.
 
 C. Learning Questions
-1. Why does K-Means converge, and why does the objective function (WCSS) never increase during the assignment or update steps?
-2. How does the initial choice of centroids affect the final clustering? Why might random initialization be problematic?
-3. What is the intuition behind K-Means++ initialization, and how does it improve upon random initialization?
-4. What happens when K-Means is applied to clusters of varying densities or non-convex shapes (like concentric circles)?
+1. Why does K-Means converge, and why does WCSS never increase?
+2. How does the initial choice of centroids affect the final clustering?
+3. What is the intuition behind K-Means++ initialization?
+4. What happens on non-convex datasets like Dataset 4B?
 
 D. Mathematics to Derive
-1. Let $C_k$ be the set of points in the $k$-th cluster, and $\mu_k$ be its centroid. Show that for a fixed assignment $C_k$, setting $\mu_k = \frac{1}{|C_k|} \sum_{x \in C_k} x$ minimizes the sum of squared distances $\sum_{x \in C_k} ||x - \mu_k||^2$.
-2. Formulate the total objective function (Inertia/WCSS).
+1. Formulate the total objective function (Inertia/WCSS).
+2. Prove that the assignment step and update step never increase WCSS.
+3. Show that for a fixed cluster assignment, the mean minimizes the sum of squared Euclidean distances to the points in the cluster.
 
 E. Implementation Contract
 - Class name: `KMeans`
 - Parameters: 
-  - `k` (int): Number of clusters.
-  - `init` (str): Initialization method, either 'random' or 'k-means++'.
-  - `max_iter` (int): Maximum number of iterations.
-  - `tol` (float): Tolerance to declare convergence (when centroids shift by less than this amount).
+  - `k` (int)
+  - `init` (str): 'random' or 'k-means++'
+  - `max_iter` (int)
+  - `tol` (float)
 - Public Methods:
-  - `fit(X)`: Computes the cluster centroids on data `X` (shape `(N, D)`).
-  - `predict(X)`: Returns the cluster labels for `X` based on nearest centroids. Shape `(N,)`.
+  - `fit(X)`
+  - `predict(X)`
 - Attributes:
-  - `centroids_`: Array of shape `(k, D)` containing final cluster centers.
-  - `labels_`: Array of shape `(N,)` containing cluster assignments for the training data.
-  - `inertia_`: Final WCSS (float).
+  - `centroids_` (shape `(k, D)`)
+  - `labels_` (shape `(N,)`)
+  - `inertia_` (float)
 
 F. Guided Implementation Stages
-1. **Distance Calculation**: Write a helper to compute pairwise squared Euclidean distances between a set of points and a set of centroids.
-2. **Initialization**: Implement 'random' (select `k` random points from `X` as initial centroids).
-3. **K-Means++ Initialization**: Implement the probabilistic initialization: pick the first centroid randomly, then iteratively choose the next centroid from remaining points with probability proportional to their squared distance to the nearest existing centroid.
-4. **Assignment Step**: Given centroids, assign each point to the nearest centroid.
-5. **Update Step**: Given assignments, compute the new centroids as the mean of the assigned points.
-6. **Main Loop**: Combine initialization, assignment, and update into the `fit` method. Stop when iterations hit `max_iter` or centroid movement is below `tol`. Calculate and store `inertia_` at the end.
+**Checkpoint 1: Initialization Strategy**
+- *What to learn*: Establishing the initial cluster centers.
+- *What to do*: Implement 'random' picking `k` data points.
+- *How to check yourself*: Ensure the output is an array of shape `(k, D)`.
+- *When to proceed*: Random init is working.
+- *Recovery hints*:
+  - Hint 1: Use `np.random.choice` with `replace=False`.
+  - Hint 2: Index `X` with the chosen indices.
+  - Hint 3: Keep it simple before adding K-Means++.
+
+**Checkpoint 2: Assignment and Update Loop**
+- *What to learn*: The iterative refinement of Lloyd's algorithm.
+- *What to do*: Implement the assignment of points to the closest centroid, and update centroids to the mean of assigned points. Stop if centroids shift less than `tol`.
+- *How to check yourself*: Track the WCSS; it should decrease or remain constant each step.
+- *When to proceed*: Test on Dataset 4A; it should flawlessly separate the two clusters.
+- *Recovery hints*:
+  - Hint 1: Use `np.argmin` over distances to find assignments.
+  - Hint 2: Compute new means using `np.mean(X[labels == i], axis=0)`.
+  - Hint 3: Watch out for integer division or shape mismatches.
 
 G. Edge Cases and Expected Tests
-1. **Empty Clusters**: What happens if a cluster loses all its points during the assignment step? Ensure your code gracefully handles this (e.g., by re-initializing the empty cluster's centroid to the furthest data point).
-2. **Deterministic Behavior**: Verify that a very low `tol` or `max_iter=0` behaves correctly.
-3. **K-Means++ advantage**: Test on a dataset where random initialization often falls into poor local optima, and verify K-Means++ performs consistently better.
+1. **Empty Clusters**: Re-initialize empty clusters to the furthest data point.
+2. **Single Point Clusters**: Handle correctly without crashing.
+3. **Identical Points**: Should partition them arbitrarily if needed or group them together.
 
 H. Complexity Analysis
-1. What is the time complexity of a single iteration of Lloyd's algorithm?
-2. What is the space complexity to store the assignments and distances?
-3. How does the time complexity of K-Means++ initialization scale with $N$, $K$, and $D$?
+1. Time complexity per iteration? Space complexity?
+2. Time complexity of K-Means++ initialization?
 
-I. Definition of Done
-- Algorithm correctly clusters cleanly separated blobs.
-- Both 'random' and 'k-means++' initialization strategies are implemented and functional.
-- The `inertia_` monotonically decreases across iterations in tests.
-- Code avoids external clustering libraries (NumPy allowed).
+I. Progressive Difficulty Levels & Definition of Done
+- Level 1 Guided: Implement basic K-Means with random init and test on Dataset 4A.
+- Level 2 Standard: Add K-Means++ and empty cluster handling.
+- Level 3 Challenge: Prove convergence mathematically and track inertia monotonically.
 
 J. Reflection
-1. If you wanted to automatically determine the best $k$, how might you use the `inertia_` attribute across multiple runs?
-2. Since K-Means relies heavily on Euclidean distance, how important is feature scaling before clustering?
+1. Why might feature scaling (e.g., standardizing) drastically change the output of K-Means?
+2. What role does $K$ play, and how would you automate its selection?
 """

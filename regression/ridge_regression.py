@@ -1,49 +1,57 @@
 """
-A. Mission
-Ridge Regression (L2 regularization) adds a penalty proportional to the square of the magnitude of the weights to the MSE loss. It prevents overfitting, stabilizes estimates when features are highly correlated (multicollinearity), and ensures a unique mathematical solution.
+Ridge Regression (L2 Regularization) Curriculum Guide
 
-B. Prerequisites
-- Solid understanding of linear regression.
-- L2 norm definition.
-- Matrix calculus for closed-form derivation.
+A. Step 0: Understand the problem
+When features are highly correlated (multicollinearity) or we have more features than samples, ordinary least squares (OLS) can overfit, resulting in wildly large weights. Ridge regression adds a penalty to constrain the weights.
 
-C. Learning Questions
-1. Why does adding a penalty on weights prevent overfitting?
-2. How does the alpha parameter control the strength of the penalty? What happens when alpha=0 or alpha approaches infinity?
-3. Why does L2 regularization shrink weights toward zero but rarely exactly to zero?
-4. Consider the geometry of the L2 constraint region (a circle/sphere); how does this shape lead to non-zero weights?
+B. Step 1: Build intuition
+Imagine balancing a scale. OLS only cares about minimizing prediction error, even if it means putting 1000kg on one side and -999kg on the other. Ridge adds a cost to the weight itself, encouraging the model to use smaller, more balanced weights.
 
-D. Mathematics to Derive
-1. Write the full objective function (MSE + L2 penalty).
-2. Derive the closed-form normal equation for Ridge Regression. Ensure you handle the intercept term correctly so it isn't penalized.
-3. Prove that the matrix (X^T X + alpha I) is always invertible for alpha > 0.
+C. Step 2: Tiny numerical example
+With 2 identical features x1=x2 and output y, OLS could pick weights [1000, -999]. Ridge with penalty alpha=1 will strongly prefer weights like [0.5, 0.5] because 0.5^2 + 0.5^2 (0.5) is much smaller than 1000^2 + (-999)^2.
 
-E. Implementation Contract
-Create a class `RidgeRegression` with the following methods:
-- `__init__(self, alpha: float)`
-- `fit(self, X: np.ndarray, y: np.ndarray) -> None`: Computes weights using the closed-form solution. NumPy allowed for array ops.
-- `predict(self, X: np.ndarray) -> np.ndarray`: Returns predictions.
+D. Step 3: Mathematical notation
+Objective function: J(w) = MSE + alpha * ||w||_2^2
+Note: ||w||_2^2 is the squared L2 norm (sum of squared weights). alpha (α) is the regularization strength.
 
-F. Guided Implementation Stages
-1. Add a column of ones to X for the bias term.
-2. Construct the identity matrix of appropriate size.
-3. Modify the first element of the identity matrix to 0, ensuring the bias weight is not penalized.
-4. Compute (X^T X + alpha * I).
-5. Solve for weights using the pseudo-inverse or linear solver (X^T y).
+E. Step 4: Derive the math
+The Ridge objective is: J(w) = (Xw - y)^T (Xw - y) + alpha * w^T w
+Taking derivative and setting to zero yields the closed-form solution:
+w = (X^T X + alpha * I)^{-1} X^T y
+The addition of alpha * I makes the matrix strictly positive definite, guaranteeing invertibility!
+CRITICAL: We do not penalize the bias term, so the first diagonal element of I should be 0.
 
-G. Edge Cases and Expected Tests
-1. Test with alpha=0: should match ordinary least squares.
-2. Test with perfectly collinear features: standard OLS fails, Ridge should output stable weights.
-3. Test with a very large alpha: weights (excluding bias) should be extremely close to 0.
+F. Step 5: Design algorithm in plain English and pseudocode
+1. Prepend a column of 1s to X for the bias term.
+2. Create an identity matrix I of size (features + 1).
+3. Set I[0, 0] = 0 to avoid penalizing the bias.
+4. Compute w = inverse(X^T X + alpha * I) @ X^T y.
 
-H. Complexity Analysis
-1. What is the time complexity of computing the closed-form solution?
-2. How does the number of features affect the computational cost of matrix inversion?
+G. Step 6: Implement simplest version (Level 1 - Guided)
+- Implement for 1D data with a predefined alpha.
+- Ensure the bias trick is applied correctly.
 
-I. Definition of Done
-The class correctly computes the closed-form Ridge weights, handles the unpenalized intercept properly, and gracefully fits datasets with multicollinearity.
+H. Step 7: Generalize (Level 2 - Standard)
+- Create `RidgeRegression` class.
+- Implement the closed-form solution for arbitrary dimensions.
 
-J. Reflection
-1. Under what circumstances would you choose gradient descent over the closed-form solution for Ridge?
-2. How sensitive is the final model to the scale of the input features?
+I. Step 8: Test and debug
+- Test with alpha=0 (should match OLS).
+- Test with large alpha (weights should shrink towards zero).
+- Compare predictions against sklearn's Ridge.
+
+J. Step 9: Analyze (Level 3 - Challenge)
+- Analyze the computational complexity of the matrix inversion O(d^3).
+- Implement gradient descent for Ridge as an alternative to closed-form.
+
+Implementation Contract:
+class RidgeRegression:
+    def __init__(self, alpha=1.0): ...
+    def fit(self, X, y): ...
+    def predict(self, X): ...
+
+Mastery Gate Hints:
+- Concept Pointer: Ridge pulls weights to zero, but rarely exactly zero.
+- Narrower: Make sure you don't regularize the intercept.
+- Debugging: If predictions are uniformly too low, you might be shrinking the bias term.
 """

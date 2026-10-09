@@ -1,46 +1,47 @@
 """
 A. **Mission**
-While Momentum accelerates SGD, it still applies a global learning rate to all parameters. RMSProp (Root Mean Square Propagation) addresses the issue that different parameters may require significantly different learning rates. It maintains a running average of squared gradients and divides the current gradient by the root of this average, effectively normalising the gradient magnitude. This builds on the limitations of vanilla SGD and Momentum.
+Implement RMSProp to adapt learning rates per parameter using gradient magnitudes.
 
 B. **Prerequisites**
-- SGD exercise (Hard).
-- Concept of adaptive learning rates (Helpful).
+- [Stage 0D: Calculus & Optimization](../foundations/README.md#module-0d-calculus-and-optimization): Gradients.
 
 C. **Learning Questions**
-1. Why is it beneficial to scale down the learning rate for parameters with large, consistent gradients and scale it up for those with small gradients?
-2. What is the purpose of the `epsilon` term in the denominator?
-3. How does the exponential moving average of squared gradients prevent the learning rate from decaying to zero too quickly (unlike Adagrad)?
+1. Why divide by root of squared gradients?
 
 D. **Mathematics to Derive**
-1. Write the update rules for the running average of squared gradients and the parameter update.
-2. Explain the scaling effect on the gradient step.
+1. Exponential moving average of squared gradients and step size.
 
 E. **Implementation Contract**
 - Class: `RMSProp`
-- Constructor: `__init__(self, lr=0.01, beta=0.99, epsilon=1e-8)`
-  - `lr`: Base learning rate.
-  - `beta`: Decay rate for the moving average.
-  - `epsilon`: Small constant for numerical stability.
-- Methods:
-  - `step(self, params, grads)`: Update parameters.
+- `__init__(self, lr=0.01, beta=0.99, epsilon=1e-8)`
+- `step(self, params, grads)`
 
 F. **Guided Implementation Stages**
-1. **Initialisation**: Store hyperparameters. Prepare to track the `squared_grad_avg` state (initialised to zeros on the first step).
-2. **State Update**: For each parameter, update the moving average: `s = beta * s + (1 - beta) * (grad ** 2)`.
-3. **Parameter Update**: Compute the step: `w = w - (lr / (sqrt(s) + epsilon)) * grad`.
+- **Stage 0: State Initialization**
+  - **What to learn**: Tracking second moments.
+  - **What to do**: Init squared_avg state.
+  - **How to check yourself**: np.zeros_like for all params.
+  - **When to proceed**: On successful init.
+  - **Recovery hints 1/2/3**: Check shapes; do on first step.
+- **Stage 1: Step Update**
+  - **What to learn**: Gradient normalization.
+  - **What to do**: Update avg and params.
+  - **How to check yourself**: Avoid div by zero.
+  - **When to proceed**: When works on Dataset 6C.
+  - **Recovery hints 1/2/3**: Use epsilon; grad**2; np.sqrt.
 
 G. **Edge Cases and Expected Tests**
-- Verify numerical stability (no division by zero) when gradients are exactly zero, thanks to `epsilon`.
-- Ensure state variables are initialised correctly matching parameter shapes.
-- Test the normalisation effect: a huge gradient should result in a bounded step size.
+- Stability with zero gradients (epsilon protects).
 
 H. **Complexity Analysis**
-- Space Complexity: Compare the memory requirements of RMSProp with Momentum and SGD.
+- Space: O(P) for second moments.
 
-I. **Definition of Done**
-- Adaptive learning rate mechanism is correctly implemented.
-- The optimiser maintains internal state for squared gradients.
+I. **Progressive Difficulty Levels & Definition of Done**
+- Level 1 Guided: Basic update.
+- Level 2 Standard: Epsilon protection.
+- Level 3 Challenge: Compare to Adagrad.
+- DoD: Succeeds on Dataset 6C.
 
 J. **Reflection**
-1. RMSProp normalises gradients based on magnitude but ignores direction. Could we combine the directional benefits of momentum with the magnitude normalisation of RMSProp?
+How does RMSProp differ from Momentum conceptually?
 """

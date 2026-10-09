@@ -1,51 +1,64 @@
 """
-A. Mission
-Polynomial regression extends linear regression to model non-linear relationships by creating new features that are polynomial powers of the original input. It is useful when the true relationship curves, but it still falls under the umbrella of linear models because it remains linear in its parameters (the weights).
+Polynomial Regression Curriculum Guide
 
-B. Prerequisites
-- Familiarity with basic linear regression and gradient descent.
-- Understanding of mean squared error (MSE) loss.
-- Matrix multiplication basics.
+A. Step 0: Understand the problem
+Polynomial curve fitting allows us to model non-linear relationships using linear regression techniques by transforming the input features. Think of modeling the trajectory of a thrown ball (a parabola) rather than a straight line.
 
-C. Learning Questions
-1. Why is polynomial regression still considered a "linear" model?
-2. What happens to the training error and testing error as you increase the polynomial degree excessively?
-3. How does this model illustrate the bias-variance tradeoff?
-4. What role does feature scaling play before creating polynomial features, especially for high degrees?
+B. Step 1: Build intuition
+Plot a curve through 5 points that look like a U-shape. A straight line will pass through the middle, missing the points and yielding high error. By squaring the input feature, we create a new feature space where a linear model can fit a quadratic curve.
 
-D. Mathematics to Derive
-1. Write the hypothesis function for a polynomial of degree d.
-2. Given an input vector x, write out the expanded feature vector.
-3. Derive the gradient of the MSE loss with respect to the weights for the expanded feature matrix.
+C. Step 2: Tiny numerical example
+Data: x = [1, 2, 3], y = [1, 4, 9], degree = 2.
+Features for x=2 become [1, 2, 4] (bias, x^1, x^2).
+A model with weights [0, 0, 1] perfectly predicts the data.
 
-E. Implementation Contract
-Create a class `PolynomialRegression` with the following methods:
-- `__init__(self, degree: int, learning_rate: float = 0.01, epochs: int = 1000)`
-- `fit(self, X: np.ndarray, y: np.ndarray) -> None`: Computes weights via gradient descent. NumPy allowed for array ops.
-- `predict(self, X: np.ndarray) -> np.ndarray`: Returns predictions.
-- `_transform_features(self, X: np.ndarray) -> np.ndarray`: Private method to map X to [1, X, X^2, ..., X^degree].
+D. Step 3: Mathematical notation
+Let x be a scalar input. A polynomial of degree d is:
+y = w_0 + w_1 x + w_2 x^2 + ... + w_d x^d
+We can create a Vandermonde matrix X where each column is x^j for j=0 to d.
 
-F. Guided Implementation Stages
-1. Implement the feature expansion step: given an array X, generate powers up to `degree` and concatenate them into a new matrix, along with an intercept column.
-2. Initialize weights array to zeros.
-3. Implement the forward pass (dot product of expanded X and weights).
-4. Compute the error and the gradient of the MSE loss.
-5. Update weights in a loop for `epochs` iterations using `learning_rate`.
+E. Step 4: Derive the math
+Once features are transformed, the objective is standard MSE:
+J(w) = (1/2N) ||Xw - y||^2
+The gradient is: dJ/dw = (1/N) X^T (Xw - y).
 
-G. Edge Cases and Expected Tests
-1. Test with degree=1: should match the behavior of basic linear regression.
-2. Test with a toy non-linear dataset (e.g., a simple parabola): verify the fit captures the curve better than degree=1.
-3. High degree overfitting: write a test with sparse data and high degree, verifying that training loss is near 0 but predictions between points vary wildly.
+F. Step 5: Design algorithm in plain English and pseudocode
+1. Define a `transform` method that takes input X and returns a new matrix with polynomial features up to `degree`.
+2. In `fit`, transform X, then use gradient descent (or closed form) to find weights.
+3. In `predict`, transform X, then compute Xw.
 
-H. Complexity Analysis
-1. What is the time complexity of the feature transformation step?
-2. What is the time complexity of each gradient descent step relative to the number of samples N and degree d?
-3. How does space complexity scale with the polynomial degree?
+G. Step 6: Implement simplest version (Level 1 - Guided)
+- Degree 2 only.
+- 3 data points.
+- Hardcode the transformation for degree 2.
 
-I. Definition of Done
-The class is fully implemented and passes all expected tests. It can fit a non-linear target and correctly apply the learned weights to new inputs via feature expansion.
+H. Step 7: Generalize (Level 2 - Standard)
+- Implement `PolynomialRegression` class with `__init__(degree, learning_rate, epochs)`.
+- Write a general `transform(X)` for arbitrary degree.
+- Implement `fit` and `predict`.
 
-J. Reflection
-1. Was gradient descent stable with higher degrees?
-2. Did you encounter numerical overflow, and if so, how might standardization of features help?
+I. Step 8: Test and debug
+- Test with degree 1 on linear data; it should match linear regression.
+- Test with degree 2 on quadratic data.
+- Watch out for exploding gradients with high degrees!
+
+J. Step 9: Analyze (Level 3 - Challenge)
+- As degree increases, values like x^10 become huge. Feature scaling (standardization) before or after transformation is critical.
+- Discuss numerical stability and condition number of the Vandermonde matrix.
+
+Implementation Contract:
+class PolynomialRegression:
+    def __init__(self, degree=2, learning_rate=0.01, epochs=1000): ...
+    def transform(self, X): ...
+    def fit(self, X, y): ...
+    def predict(self, X): ...
+
+Edge Cases to Check:
+- degree = 0 (predicts the mean of y).
+- negative degree (raise ValueError).
+
+Mastery Gate Hints:
+- Concept Pointer: Think of polynomial regression as linear regression on transformed features.
+- Narrower: Ensure your `transform` method properly adds the bias term (x^0).
+- Debugging: If loss goes to NaN, your higher degree features are causing overflow. Scale your inputs!
 """
